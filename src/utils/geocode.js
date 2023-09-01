@@ -1,22 +1,33 @@
-const request = require('request');
+const axios = require('axios');
 
-const geocode = (address, callback) => {
+const geocode = async (address) => {
+
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/'${address}.json?access_token=pk.eyJ1IjoiaGFyc2hpbDAxIiwiYSI6ImNsbHFkaXRncDBkOWIzdW5ya21hNTljbDMifQ.GAG5ixApWyQXVgVUen7lAg&limit=1`
-    request({url, json: true }, (error, {body}) => {
-        if (error) {
-            callback('Unable to connect to the location services!', undefined);
+
+    try {
+        const response = await axios.get(url);
+        const data = response.data;
+
+        if (data.features.length === 0) {
+            return {error:'Unable to find location. Try another search.'};
         }
-        else if (body.features.length === 0) {
-            callback('Unable to find location. Try another search.', undefined);
-        }
+
         else {
-            callback(undefined, {
-                latitude: body.features[0].center[1],
-                longitude: body.features[0].center[0],
-                location:body.features[0].place_name
-            })
+            return {
+                latitude: data.features[0].center[1],
+                longitude: data.features[0].center[0],
+                location: data.features[0].place_name
+            }
         }
-    })
+
+    }
+    catch (error) {
+        return {error:'Unable to connect to location services!'};
+    }
+
 }
+
+
+
 
 module.exports = geocode;
