@@ -17,6 +17,7 @@ weatherForm.addEventListener('submit',(e)=>{
     messageTwo.textContent = ''
     messageThree.textContent = ''
 
+    //fetch is used for clien side scripting only as it is provided by web browser and not node
     fetch(`/weather?address=${location}`)
     .then((response)=>{
         response.json().then((data)=>{
